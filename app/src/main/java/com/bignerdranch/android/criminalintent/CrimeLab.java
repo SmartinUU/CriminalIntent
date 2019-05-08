@@ -4,7 +4,6 @@ import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.UUID;
 
 /**
@@ -14,7 +13,7 @@ import java.util.UUID;
 public class CrimeLab {
     private static CrimeLab sCrimeLab;
     private List<Crime> mCrimes;
-    private TreeMap mTreeMap;
+//    private TreeMap mTreeMap;
 
     public static CrimeLab get(Context context) {
         if (sCrimeLab == null) {
@@ -25,12 +24,17 @@ public class CrimeLab {
 
     public CrimeLab(Context context) {
         mCrimes = new ArrayList<>();
-        mTreeMap = new TreeMap();
+//        mTreeMap = new TreeMap();
     }
 
     public void addCrime(Crime crime) {
         mCrimes.add(crime);
-        mTreeMap.put(crime.getId(), crime);
+//        mTreeMap.put(crime.getId(), crime);
+    }
+
+    public void removeCrime(Crime crime) {
+        mCrimes.remove(crime);
+//        mTreeMap.remove(crime.getId());
     }
 
     public List<Crime> getCrimes() {
@@ -38,6 +42,12 @@ public class CrimeLab {
     }
 
     public Crime getCrime(UUID uuid) {
-        return (Crime) mTreeMap.get(uuid);
+//        return (Crime) mTreeMap.get(uuid);
+        for (Crime crime : mCrimes) {
+            if (crime.getId().equals(uuid)) {
+                return crime;
+            }
+        }
+        return null;
     }
 }
