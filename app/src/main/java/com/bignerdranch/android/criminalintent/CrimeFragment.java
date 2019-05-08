@@ -14,6 +14,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import java.util.UUID;
+
 import static android.widget.CompoundButton.OnCheckedChangeListener;
 
 /**
@@ -21,15 +23,28 @@ import static android.widget.CompoundButton.OnCheckedChangeListener;
  * Describe:
  */
 public class CrimeFragment extends Fragment {
+
+    private static final String ARG_CRIME_ID = "crime_id";
+
     private Crime mCrime;
     private EditText mCrimeTitle;
     private Button mCrimeDate;
     private CheckBox mCrimeSolved;
 
+    public static CrimeFragment newInstance(UUID crimeId) {
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_CRIME_ID, crimeId);
+
+        CrimeFragment fragment = new CrimeFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCrime = new Crime();
+        UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
+        mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
     }
 
     @Nullable
@@ -46,6 +61,7 @@ public class CrimeFragment extends Fragment {
         mCrimeDate = (Button) v.findViewById(R.id.crime_date);
         mCrimeSolved = (CheckBox) v.findViewById(R.id.crime_solved);
 
+        mCrimeTitle.setText(mCrime.getTitle());
         mCrimeTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -64,6 +80,7 @@ public class CrimeFragment extends Fragment {
         });
         mCrimeDate.setText(mCrime.getDate().toString());
         mCrimeDate.setEnabled(false);
+        mCrimeSolved.setChecked(mCrime.isSolved());
         mCrimeSolved.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
