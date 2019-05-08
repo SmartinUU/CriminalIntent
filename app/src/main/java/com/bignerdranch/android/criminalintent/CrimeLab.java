@@ -26,14 +26,11 @@ public class CrimeLab {
     public CrimeLab(Context context) {
         mCrimes = new ArrayList<>();
         mTreeMap = new TreeMap();
-        for (int i = 0; i < 100; i++) {
-            Crime crime = new Crime();
-            crime.setTitle("Crime #" + i);
-            crime.setSolved(i % 2 == 0); // Every other one
+    }
 
-            mCrimes.add(crime);
-            mTreeMap.put(crime.getId(), crime);
-        }
+    public void addCrime(Crime crime) {
+        mCrimes.add(crime);
+        mTreeMap.put(crime.getId(), crime);
     }
 
     public List<Crime> getCrimes() {
