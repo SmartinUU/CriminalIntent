@@ -38,6 +38,11 @@ public class DatePickerFragment extends DialogFragment {
         return fragment;
     }
 
+    //通过onActivityForResult()通知选中的时间
+    public static Date getSelectedDate(Intent result) {
+        return (Date) result.getSerializableExtra(EXTRA_DATE);
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {

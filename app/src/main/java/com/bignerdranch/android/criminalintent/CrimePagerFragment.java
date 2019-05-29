@@ -27,10 +27,13 @@ import static android.widget.CompoundButton.OnCheckedChangeListener;
 
 /**
  * Create by zhengzhuangzhu on 2019-05-07
- * Describe:
+ * <p>
+ * Describe:显示Crime详情的fragment
  */
-public class CrimeFragment extends Fragment {
-
+public class CrimePagerFragment extends Fragment {
+    /**
+     * 使用Argument从activity旺fragment传递id
+     */
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "DialogDate";
 
@@ -41,11 +44,11 @@ public class CrimeFragment extends Fragment {
     private Button mCrimeDate;
     private CheckBox mCrimeSolved;
 
-    public static CrimeFragment newInstance(UUID crimeId) {
+    public static CrimePagerFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_CRIME_ID, crimeId);
 
-        CrimeFragment fragment = new CrimeFragment();
+        CrimePagerFragment fragment = new CrimePagerFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -79,18 +82,29 @@ public class CrimeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_crime, container, false);
+        View v = inflater.inflate(R.layout.fragment_pager_crime, container, false);
         initView(v);
         return v;
     }
 
+    /**
+     * 同Activity的两个fragment传值，需要手动设置谁来接收result
+     * setTargetFragment（接收值的目标fragment，requestCode）
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
         if (requestCode == REQUEST_DATE) {
-            Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+            if (data == null) {
+                return;
+            }
+            Date date = DatePickerFragment.getSelectedDate(data);
             mCrime.setDate(date);
             mCrimeDate.setText(mCrime.getDate().toString());
         }
@@ -124,7 +138,7 @@ public class CrimeFragment extends Fragment {
             public void onClick(View v) {
                 FragmentManager fm = getFragmentManager();
                 DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
-                dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+                dialog.setTargetFragment(CrimePagerFragment.this, REQUEST_DATE);
                 dialog.show(fm, DIALOG_DATE);
             }
         });

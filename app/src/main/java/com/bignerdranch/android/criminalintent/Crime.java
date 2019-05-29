@@ -5,7 +5,7 @@ import java.util.UUID;
 
 /**
  * Create by zhengzhuangzhu on 2019-05-07
- * Describe:
+ * Describe: 单个Crime事件的模型
  */
 public class Crime {
     private UUID mId;
@@ -14,6 +14,7 @@ public class Crime {
     private boolean mSolved;
 
     public Crime() {
+        //产生一个随机唯一ID值
         mId = UUID.randomUUID();
         mDate = new Date();
     }

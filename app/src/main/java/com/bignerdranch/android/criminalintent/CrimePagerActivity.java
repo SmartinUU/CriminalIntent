@@ -12,8 +12,14 @@ import android.support.v7.app.AppCompatActivity;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 详情Crime页activity，逻辑内容托管给fragment，自身仅提供定位和滑动功能
+ */
 public class CrimePagerActivity extends AppCompatActivity {
 
+    /**
+     * 通过extra传入的id，和CrimeLab中的id逐一对比，通过index定位某个Crime
+     */
     private static final String EXTRA_CRIME_ID =
             "com.bignerdranch.android.criminalintent.crime_id";
     private ViewPager mViewPager;
@@ -43,7 +49,7 @@ public class CrimePagerActivity extends AppCompatActivity {
             @Override
             public Fragment getItem(int i) {
                 Crime crime = mCrimes.get(i);
-                return CrimeFragment.newInstance(crime.getId());
+                return CrimePagerFragment.newInstance(crime.getId());
             }
 
             @Override
@@ -51,6 +57,7 @@ public class CrimePagerActivity extends AppCompatActivity {
                 return mCrimes.size();
             }
         });
+        //通过index定位某个CrimeFragment
         for (int i = 0; i < mCrimes.size(); i++) {
             if (mCrimes.get(i).getId().equals(crimeId)) {
                 mViewPager.setCurrentItem(i);

@@ -21,13 +21,13 @@ import java.util.List;
 
 /**
  * Create by zhengzhuangzhu on 2019-05-07
- * Describe:
+ * <p>
+ * Describe: 列表fragment，负责主要逻辑
  */
 public class CrimeListFragment extends Fragment {
-    private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
+    private static final String KEY_SUBTITLE_VISIBLE = "subtitle";
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
-    private int updatePosition;
     private boolean mSubtitleVisible;
 
     @Override
@@ -41,7 +41,7 @@ public class CrimeListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
+            mSubtitleVisible = savedInstanceState.getBoolean(KEY_SUBTITLE_VISIBLE);
         }
         View view = inflater.inflate(R.layout.fragment_crime_list, container, false);
         initView(view);
@@ -57,7 +57,7 @@ public class CrimeListFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mSubtitleVisible);
+        outState.putBoolean(KEY_SUBTITLE_VISIBLE, mSubtitleVisible);
     }
 
     @Override
@@ -149,7 +149,6 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            updatePosition = getAdapterPosition();
             Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
             startActivity(intent);
         }

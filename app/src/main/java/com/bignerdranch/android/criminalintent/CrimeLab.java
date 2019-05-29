@@ -8,12 +8,12 @@ import java.util.UUID;
 
 /**
  * Create by zhengzhuangzhu on 2019-05-07
- * Describe:
+ * <p>
+ * Describe: 应用与列表，该模型容纳一组Crime对象
  */
 public class CrimeLab {
     private static CrimeLab sCrimeLab;
     private List<Crime> mCrimes;
-//    private TreeMap mTreeMap;
 
     public static CrimeLab get(Context context) {
         if (sCrimeLab == null) {
@@ -24,17 +24,14 @@ public class CrimeLab {
 
     public CrimeLab(Context context) {
         mCrimes = new ArrayList<>();
-//        mTreeMap = new TreeMap();
     }
 
     public void addCrime(Crime crime) {
         mCrimes.add(crime);
-//        mTreeMap.put(crime.getId(), crime);
     }
 
     public void removeCrime(Crime crime) {
         mCrimes.remove(crime);
-//        mTreeMap.remove(crime.getId());
     }
 
     public List<Crime> getCrimes() {
@@ -42,7 +39,6 @@ public class CrimeLab {
     }
 
     public Crime getCrime(UUID uuid) {
-//        return (Crime) mTreeMap.get(uuid);
         for (Crime crime : mCrimes) {
             if (crime.getId().equals(uuid)) {
                 return crime;
