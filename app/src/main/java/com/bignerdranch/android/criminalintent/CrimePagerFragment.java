@@ -2,13 +2,18 @@ package com.bignerdranch.android.criminalintent;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +28,7 @@ import android.widget.EditText;
 import java.util.Date;
 import java.util.UUID;
 
+import static android.view.View.INVISIBLE;
 import static android.widget.CompoundButton.OnCheckedChangeListener;
 
 /**
@@ -40,11 +46,14 @@ public class CrimePagerFragment extends Fragment {
      */
     private static final String DIALOG_DATE = "DialogDate";
     private static final int REQUEST_DATE = 0;
+    private static final int REQUEST_CONTACT = 1;
 
     private Crime mCrime;
     private EditText mCrimeTitle;
     private Button mCrimeDate;
     private CheckBox mCrimeSolved;
+    private Button mCrimeSuspect;
+    private Button mCrimeReport;
 
     public static CrimePagerFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -110,12 +119,32 @@ public class CrimePagerFragment extends Fragment {
             return;
         }
         if (requestCode == REQUEST_DATE) {
+            //选择日期
             if (data == null) {
                 return;
             }
             Date date = DatePickerFragment.getSelectedDate(data);
             mCrime.setDate(date);
             mCrimeDate.setText(mCrime.getDate().toString());
+        } else if (requestCode == REQUEST_CONTACT && data != null) {
+            //选择联系人
+            Uri contactUri = data.getData();
+            String[] queryFields = new String[]{
+                    ContactsContract.Contacts.DISPLAY_NAME
+            };
+            Cursor c = getActivity().getContentResolver()
+                    .query(contactUri, queryFields, null, null, null);
+            try {
+                if (c.getCount() == 0) {
+                    return;
+                }
+                c.moveToFirst();
+                String suspect = c.getString(0);
+                mCrime.setSuspect(suspect);
+                mCrimeSuspect.setText(suspect);
+            } finally {
+                c.close();
+            }
         }
     }
 
@@ -158,5 +187,65 @@ public class CrimePagerFragment extends Fragment {
                 mCrime.setSolved(isChecked);
             }
         });
+        mCrimeReport = (Button) v.findViewById(R.id.crime_report);
+        //出现可以执行发送文本的activity选项
+        mCrimeReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
+                i.putExtra(Intent.EXTRA_SUBJECT,
+                        getString(R.string.crime_report_subject));
+                i = Intent.createChooser(i, getString(R.string.send_report));
+                startActivity(i);
+            }
+        });
+        //从联系人列表得到嫌疑人名并显示
+        final Intent pickContact = new Intent(Intent.ACTION_PICK,
+                ContactsContract.Contacts.CONTENT_URI);
+        mCrimeSuspect = (Button) v.findViewById(R.id.crime_suspect);
+        mCrimeSuspect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(pickContact, REQUEST_CONTACT);
+            }
+        });
+        if (mCrime.getSuspect() != null) {
+            mCrimeSuspect.setText(mCrime.getSuspect());
+        }
+
+        PackageManager packageManager = getActivity().getPackageManager();
+        if (packageManager.resolveActivity(pickContact,
+                PackageManager.MATCH_DEFAULT_ONLY) == null) {
+            mCrimeSuspect.setEnabled(false);
+        }
+    }
+
+    /**
+     * ,创建四段字符串信息,并返回拼接完整的消息(时间地点等信息)
+     *
+     * @return
+     */
+    private String getCrimeReport() {
+        String solvedString = null;
+        if (mCrime.isSolved()) {
+            solvedString = getString(R.string.crime_report_solved);
+        } else {
+            solvedString = getString(R.string.crime_report_unsolved);
+        }
+        String dateFormat = "EEE, MMM dd";
+        String dateString = DateFormat.format(dateFormat, mCrime.getDate()).toString();
+
+        String suspect = mCrime.getSuspect();
+        if (suspect == null) {
+            suspect = getString(R.string.crime_report_no_suspect);
+        } else {
+            suspect = getString(R.string.crime_report_suspect, suspect);
+        }
+
+        String report = getString(R.string.crime_report,
+                mCrime.getTitle(), dateString, solvedString, suspect);
+        return report;
     }
 }
