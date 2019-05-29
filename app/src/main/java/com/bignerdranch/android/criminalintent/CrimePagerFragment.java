@@ -35,8 +35,10 @@ public class CrimePagerFragment extends Fragment {
      * 使用Argument从activity旺fragment传递id
      */
     private static final String ARG_CRIME_ID = "crime_id";
+    /**
+     * 用来设置TagFragment的
+     */
     private static final String DIALOG_DATE = "DialogDate";
-
     private static final int REQUEST_DATE = 0;
 
     private Crime mCrime;
@@ -59,6 +61,13 @@ public class CrimePagerFragment extends Fragment {
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        CrimeLab.get(getActivity())
+                .updateCrime(mCrime);
     }
 
     @Override

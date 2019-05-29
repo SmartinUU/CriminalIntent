@@ -14,8 +14,11 @@ public class Crime {
     private boolean mSolved;
 
     public Crime() {
-        //产生一个随机唯一ID值
-        mId = UUID.randomUUID();
+        this(UUID.randomUUID());
+    }
+
+    public Crime(UUID id) {
+        mId = id;
         mDate = new Date();
     }
 
